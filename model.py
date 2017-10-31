@@ -9,12 +9,12 @@ def generator(z, y, train=True):
     # y 是一个 [BATCH_SIZE, 10] 维的向量，把 y 转成四维张量
     yb = tf.reshape(y, [BATCH_SIZE, 1, 1, 10], name='yb')
     # 把 y 作为约束条件和 z 拼接起来
-    z = tf.concat(1, [z, y], name='z_concat_y')
+    z = tf.concat([z, y],1, name='z_concat_y')
     # 经过一个全连接，BN 和激活层 ReLu
     h1 = tf.nn.relu(batch_norm_layer(fully_connected(z, 1024, 'g_fully_connected1'),
                                      is_train=train, name='g_bn1'))
     # 把约束条件和上一层拼接起来
-    h1 = tf.concat(1, [h1, y], name='active1_concat_y')
+    h1 = tf.concat([h1, y],1,  name='active1_concat_y')
 
     h2 = tf.nn.relu(batch_norm_layer(fully_connected(h1, 128 * 49, 'g_fully_connected2'),
                                      is_train=train, name='g_bn2'))
@@ -51,11 +51,11 @@ def discriminator(image, y, reuse=False):
     h2 = lrelu(batch_norm_layer(conv2d(h1, 74, name='d_conv2d2'),
                                 name='d_bn2'), name='lrelu2')
     h2 = tf.reshape(h2, [BATCH_SIZE, -1], name='reshape_lrelu2_to_2d')
-    h2 = tf.concat(1, [h2, y], name='lrelu2_concat_y')
+    h2 = tf.concat([h2, y],1,  name='lrelu2_concat_y')
 
     h3 = lrelu(batch_norm_layer(fully_connected(h2, 1024, name='d_fully_connected3'),
                                 name='d_bn3'), name='lrelu3')
-    h3 = tf.concat(1, [h3, y], name='lrelu3_concat_y')
+    h3 = tf.concat([h3, y],1,  name='lrelu3_concat_y')
 
     # 全连接层，输出以为 loss 值
     h4 = fully_connected(h3, 1, name='d_result_withouts_sigmoid')

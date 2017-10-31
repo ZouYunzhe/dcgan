@@ -85,8 +85,8 @@ def conv_cond_concat(value, cond, name='concat'):
     # 条件会被预先设为四维张量的形式，假设输入为 [64, 32, 32, 32] 维的张量，
     # 条件为 [64, 32, 32, 10] 维的张量，那么输出就是一个 [64, 32, 32, 42] 维张量
     with tf.variable_scope(name):
-        return tf.concat(3, [value,
-                             cond * tf.ones(value_shapes[0:3] + cond_shapes[3:])])
+        return tf.concat( [value,
+                             cond * tf.ones(value_shapes[0:3] + cond_shapes[3:])],3)
 
 
 # Batch Normalization 层

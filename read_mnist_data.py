@@ -3,7 +3,7 @@ import numpy as np
 
 
 def read_mnist_data():
-    data_dir = 'D:\MachineLearning\testing\MNIST_data'
+    data_dir = 'D:/MachineLearning/testing/MNIST_data'
 
     # 打开训练数据
     fd = open(os.path.join(data_dir, 'train-images-idx3-ubyte'))
