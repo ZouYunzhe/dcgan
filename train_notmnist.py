@@ -110,12 +110,11 @@ def train():
     for k in range(BATCH_SIZE):
         sample_labels[k, int(sample_labels_tmp[0, k])] = 1
     sess.run(init)
-
+    coord = tf.train.Coordinator()
+    threads = tf.train.start_queue_runners(sess=sess, coord=coord)
+    try:
     # 循环 25 个 epoch 训练网络
-    for epoch in range(25):
-        coord = tf.train.Coordinator()
-        threads = tf.train.start_queue_runners(sess=sess, coord=coord)
-        try:
+        for epoch in range(25):
             batch_idxs = 1000
             for idx in range(batch_idxs):
                 if coord.should_stop():
@@ -146,21 +145,20 @@ def train():
 
                 # 训练过程中，用采样器采样，并且保存采样的图片到
                 # /home/your_name/TensorFlow/DCGAN/samples/
-                if idx == 1000:
+                if idx == 999:
                     sample = sess.run(samples, feed_dict={z: sample_z, y: sample_labels})
                     samples_path = '/home/zouyunzhe/dc/non_samples/'
                     save_images(sample, [8, 8],
                                 samples_path + 'test_%d_epoch_%d.png' % (epoch, idx))
                     print('save down')
-        except tf.errors.OutOfRangeError:
-            print('Done training -- epoch limit reached')
-        finally:
-            coord.request_stop()
-        coord.join(threads)
         if epoch == 24:
             checkpoint_path = os.path.join(train_dir, 'DCGAN_model.ckpt')
             saver.save(sess, checkpoint_path, global_step=epoch)
-
+    except tf.errors.OutOfRangeError:
+        print('Done training -- epoch limit reached')
+    finally:
+        coord.request_stop()
+    coord.join(threads)
     sess.close()
 
 if __name__ == '__main__':
